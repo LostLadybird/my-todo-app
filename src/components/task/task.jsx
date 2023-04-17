@@ -2,8 +2,13 @@ import { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS } from 'date-fns/locale';
+import classNames from 'classnames/bind';
+
+import styles from '../task-list/task-list.css';
 
 import './task.css';
+
+let cx = classNames.bind(styles);
 
 export default class Task extends Component {
   state = {
@@ -37,15 +42,14 @@ export default class Task extends Component {
     const { todo, deleteTask, ToggleCompleted } = this.props;
     const { task, id, completed, date } = todo;
 
-    let classNames = '';
-    if (completed) {
-      classNames += 'completed';
-    } else if (this.state.editing) {
-      classNames += 'editing';
-    }
+    let btnClass = cx({
+      '': true,
+      completed: completed,
+      editing: this.state.editing,
+    });
 
     return (
-      <li className={classNames}>
+      <li className={btnClass}>
         <div className="view">
           <input className="toggle" type="checkbox" id={id} onClick={ToggleCompleted}></input>
           <label>
