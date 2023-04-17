@@ -22,6 +22,8 @@ export default class Footer extends Component {
 Footer.defaultProps = {
   filter: 'All',
   todoCount: 0,
+  clearCompleted: () => {},
+  onFilterChange: () => {},
 };
 
 Footer.propTypes = {

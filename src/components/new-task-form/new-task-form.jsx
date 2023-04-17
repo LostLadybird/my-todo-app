@@ -24,14 +24,13 @@ export default class NewTaskForm extends Component {
   };
 
   render() {
-    const { placeholder } = this.props;
     return (
       <header className="header">
         <h1>todos</h1>
         <form onSubmit={this.submitTask}>
           <input
             className="new-todo"
-            placeholder={placeholder}
+            placeholder={'What needs to be done?'}
             autoFocus
             onChange={this.typeText}
             value={this.state.label}
@@ -43,10 +42,9 @@ export default class NewTaskForm extends Component {
 }
 
 NewTaskForm.defaultProps = {
-  placeholder: 'What needs to be done?',
+  onItemAdded: () => {},
 };
 
 NewTaskForm.propTypes = {
-  placeholder: PropTypes.string,
   onItemAdded: PropTypes.func.isRequired,
 };

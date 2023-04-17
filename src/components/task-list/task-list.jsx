@@ -29,6 +29,9 @@ export default class TaskList extends Component {
 
 TaskList.defaultProps = {
   todos: {},
+  onDeleted: () => {},
+  ToggleCompleted: () => {},
+  editTask: () => {},
 };
 
 TaskList.propTypes = {

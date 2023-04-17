@@ -29,6 +29,7 @@ export default class TasksFilter extends Component {
 
 TasksFilter.defaultProps = {
   filter: 'All',
+  onFilterChange: () => {},
 };
 
 TasksFilter.propTypes = {
