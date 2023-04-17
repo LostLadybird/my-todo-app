@@ -7,6 +7,7 @@ import Footer from '../footer';
 import './app.css';
 
 export default class App extends Component {
+  maxId = 1;
   constructor() {
     super();
     this.state = {
@@ -19,7 +20,7 @@ export default class App extends Component {
     const data = {
       task: value,
       completed: false,
-      id: this.state.todoData.length + 1,
+      id: this.maxId++,
       date: new Date(),
     };
     this.setState(({ todoData }) => ({ todoData: [...todoData, data] }));
