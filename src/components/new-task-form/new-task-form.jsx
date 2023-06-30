@@ -30,7 +30,7 @@ export default class NewTaskForm extends Component {
         <form onSubmit={this.submitTask}>
           <input
             className="new-todo"
-            placeholder={'What needs to be done?'}
+            placeholder="What needs to be done?"
             autoFocus
             onChange={this.typeText}
             value={this.state.label}
