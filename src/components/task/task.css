@@ -29,3 +29,19 @@
 .toggle-all:checked + label:before {
   color: #737373;
 }
+
+.icon-pause:after {
+  content: '⏸';
+}
+
+.icon-play:after {
+  content: '▶';
+}
+
+.timer {
+  margin: 10px;
+}
+
+.timer-time {
+  margin: 15px;
+}
