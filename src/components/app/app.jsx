@@ -16,14 +16,32 @@ export default class App extends Component {
     };
   }
 
-  addItem = (value) => {
+  addItem = (value, min, sec) => {
     const data = {
       task: value,
       completed: false,
       id: this.maxId++,
       date: new Date(),
+      minutes: min,
+      seconds: sec,
     };
+    if (min == '' && sec > 0) {
+      data.minutes = 0;
+    }
+    if (sec == '' && min > 0) {
+      data.seconds = 0;
+    }
     this.setState(({ todoData }) => ({ todoData: [...todoData, data] }));
+  };
+
+  updatedTime = (timerId, min, sec) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === timerId);
+      if (idx >= 0) {
+        todoData[idx].minutes = min;
+        todoData[idx].seconds = sec;
+      }
+    });
   };
 
   deleteTask = (deletedId) => {
@@ -100,6 +118,7 @@ export default class App extends Component {
           onDeleted={this.deleteTask}
           ToggleCompleted={this.ToggleCompleted}
           editTask={this.editTask}
+          OnUpdatedTime={this.updatedTime}
         />
         <Footer
           todoCount={todoCount}
