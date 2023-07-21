@@ -25,22 +25,22 @@ export default class App extends Component {
       minutes: min,
       seconds: sec,
     };
-    if (min == '' && sec > 0) {
-      data.minutes = 0;
-    }
-    if (sec == '' && min > 0) {
-      data.seconds = 0;
-    }
     this.setState(({ todoData }) => ({ todoData: [...todoData, data] }));
   };
 
   updatedTime = (timerId, min, sec) => {
-    this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === timerId);
-      if (idx >= 0) {
-        todoData[idx].minutes = min;
-        todoData[idx].seconds = sec;
-      }
+    const { todoData } = this.state;
+    const taskIndex = todoData.findIndex((el) => el.id === timerId);
+    let updatedData = {
+      ...todoData[taskIndex],
+      minutes: min,
+      seconds: sec,
+    };
+    const newTask = [...todoData.slice(0, taskIndex), updatedData, ...todoData.slice(taskIndex + 1)];
+    this.setState(() => {
+      return {
+        todoData: newTask,
+      };
     });
   };
 

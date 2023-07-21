@@ -89,7 +89,11 @@ export default class Task extends Component {
   };
 
   componentDidMount() {
-    this.timer = setInterval(() => this.timerOn(), 1000);
+    this.timer = setInterval(() => {
+      if (this.state.timerOn === true) {
+        this.timerOn();
+      }
+    }, 1000);
   }
 
   componentWillUnmount() {
@@ -110,7 +114,7 @@ export default class Task extends Component {
 
     let timerTime = `${timerMin} : ${timerSec}`;
     let timer =
-      timerMin !== '' || timerSec !== '' ? (
+      timerMin > 0 || timerSec > 0 ? (
         <span className="timer">
           <button className="icon icon-play" onClick={this.timerPlay}></button>
           <button className="icon icon-pause" onClick={this.timerPaused}></button>
@@ -165,14 +169,7 @@ Task.defaultProps = {
 };
 
 Task.propTypes = {
-  todo: PropTypes.shape({
-    task: PropTypes.string,
-    completed: PropTypes.bool,
-    id: PropTypes.number,
-    date: PropTypes.instanceOf(Date),
-    minutes: PropTypes.string,
-    seconds: PropTypes.string,
-  }),
+  todo: PropTypes.objectOf(PropTypes.any),
   editTask: PropTypes.func.isRequired,
   deleteTask: PropTypes.func.isRequired,
   ToggleCompleted: PropTypes.func.isRequired,
