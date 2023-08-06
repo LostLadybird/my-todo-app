@@ -29,15 +29,14 @@ export default class App extends Component {
   };
 
   updatedTime = (timerId, min, sec) => {
-    const { todoData } = this.state;
-    const taskIndex = todoData.findIndex((el) => el.id === timerId);
-    let updatedData = {
-      ...todoData[taskIndex],
-      minutes: min,
-      seconds: sec,
-    };
-    const newTask = [...todoData.slice(0, taskIndex), updatedData, ...todoData.slice(taskIndex + 1)];
-    this.setState(() => {
+    this.setState(({ todoData }) => {
+      const taskIndex = todoData.findIndex((el) => el.id === timerId);
+      let updatedData = {
+        ...todoData[taskIndex],
+        minutes: min,
+        seconds: sec,
+      };
+      const newTask = [...todoData.slice(0, taskIndex), updatedData, ...todoData.slice(taskIndex + 1)];
       return {
         todoData: newTask,
       };

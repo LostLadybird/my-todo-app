@@ -20,6 +20,8 @@ export default class Task extends Component {
     totalSeconds: 0,
   };
 
+  interval = null;
+
   submitTask = (event) => {
     event.preventDefault();
 
@@ -43,6 +45,7 @@ export default class Task extends Component {
   };
 
   timerDone = () => {
+    console.log('timerDone');
     this.setState({
       timerOn: false,
       timerMin: 0,
@@ -75,30 +78,31 @@ export default class Task extends Component {
     return res;
   };
 
-  timerPlay = () => {
-    this.setState({
-      timerOn: true,
-    });
-  };
-
   timerPaused = () => {
     this.setState({
       timerOn: false,
       totalSeconds: this.state.totalSeconds,
     });
+    clearInterval(this.interval);
   };
 
-  componentDidMount() {
-    this.timer = setInterval(() => {
+  timerPlay = () => {
+    this.setState({
+      timerOn: true,
+    });
+    this.interval = setInterval(() => {
       if (this.state.timerOn === true) {
         this.timerOn();
+      } else {
+        this.setState({
+          timerOn: false,
+        });
       }
     }, 1000);
-  }
+  };
 
   componentWillUnmount() {
     this.timerPaused();
-    clearInterval(this.timer);
   }
 
   render() {
