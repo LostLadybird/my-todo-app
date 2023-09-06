@@ -1,26 +1,25 @@
-import { Component } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 
 import TasksFilter from '../tasks-filter';
 import './footer.css';
 
-export default class Footer extends Component {
-  render() {
-    const { todoCount, filter, clearCompleted, onFilterChange } = this.props;
-    return (
-      <footer className="footer">
-        <span className="todo-count">{todoCount} items left</span>
-        <TasksFilter filter={filter} onFilterChange={onFilterChange} />
-        <button className="clear-completed" onClick={() => clearCompleted()}>
-          Clear completed
-        </button>
-      </footer>
-    );
-  }
-}
+const Footer = ({ todoCount, filters, clearCompleted, onFilterChange }) => {
+  return (
+    <footer className="footer">
+      <span className="todo-count">{todoCount} items left</span>
+      <TasksFilter filters={filters} onFilterChange={onFilterChange} />
+      <button className="clear-completed" onClick={() => clearCompleted()}>
+        Clear completed
+      </button>
+    </footer>
+  );
+};
+
+export default Footer;
 
 Footer.defaultProps = {
-  filter: 'All',
+  filters: 'all',
   todoCount: 0,
   clearCompleted: () => {},
   onFilterChange: () => {},
@@ -28,7 +27,7 @@ Footer.defaultProps = {
 
 Footer.propTypes = {
   todoCount: PropTypes.number,
-  filter: PropTypes.string,
+  filters: PropTypes.string,
   clearCompleted: PropTypes.func.isRequired,
   onFilterChange: PropTypes.func.isRequired,
 };

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -10,162 +10,110 @@ import './task.css';
 
 let cx = classNames.bind(styles);
 
-export default class Task extends Component {
-  state = {
-    editing: false,
-    value: '',
-    timerOn: false,
-    timerMin: this.props.todo.minutes,
-    timerSec: this.props.todo.seconds,
-    totalSeconds: 0,
+const Task = ({ todo, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdatedTime }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState('');
+  const [timerOnState, setTimerOnState] = useState(false);
+  const [timer, setTimer] = useState(totalSec);
+
+  const editButton = () => {
+    console.log('edit');
+    setEditing(true);
+    setValue(todo.task);
   };
 
-  interval = null;
-
-  submitTask = (event) => {
+  const submitTask = (event) => {
     event.preventDefault();
 
-    const {
-      editTask,
-      todo: { id },
-    } = this.props;
-
-    editTask(id, this.state.value);
-
-    this.setState({
-      value: '',
-    });
-    this.setState({ editing: false });
+    editTask(todo.id, value);
+    setValue('');
+    setEditing(false);
+    return;
   };
 
-  typeText = (event) => {
-    this.setState({
-      value: event.target.value,
-    });
+  const typeText = (event) => {
+    setValue(event.target.value);
+    return;
   };
 
-  timerDone = () => {
-    console.log('timerDone');
-    this.setState({
-      timerOn: false,
-      timerMin: 0,
-      timerSec: 0,
-    });
+  const timerOn = () => {
+    setTimer((timer) => timer - 1);
   };
 
-  timerOn = () => {
-    let totalTime = this.convertFn();
-    if (this.state.timerOn === false) {
-      return;
-    }
-    if (totalTime === 0) {
-      this.timerDone();
-    }
-    let minutes = Math.floor(totalTime / 60);
-    let seconds = totalTime % 60;
-    this.props.OnUpdatedTime(this.props.todo.id, minutes, seconds);
-    this.setState({
-      totalSeconds: totalTime - 1,
-      timerMin: minutes,
-      timerSec: seconds,
-    });
+  const timerPaused = () => {
+    setTimerOnState(false);
   };
 
-  convertFn = () => {
-    const { timerMin, timerSec } = this.state;
-    let sum = timerMin * 60 + timerSec * 1;
-    let res = sum - 1;
-    return res;
+  const timerPlay = () => {
+    setTimerOnState(true);
   };
 
-  timerPaused = () => {
-    this.setState({
-      timerOn: false,
-      totalSeconds: this.state.totalSeconds,
-    });
-    clearInterval(this.interval);
-  };
-
-  timerPlay = () => {
-    this.setState({
-      timerOn: true,
-    });
-    this.interval = setInterval(() => {
-      if (this.state.timerOn === true) {
-        this.timerOn();
-      } else {
-        this.setState({
-          timerOn: false,
-        });
-      }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (timerOnState) timerOn();
+      if (timer === 0) setTimerOnState(false);
     }, 1000);
+    return () => {
+      OnUpdatedTime(todo.id, timer);
+      clearInterval(interval);
+    };
+  }, [timerOnState, timer]);
+
+  let btnClass = cx({
+    '': true,
+    completed: todo.completed,
+    editing: editing,
+  });
+
+  const timerSet = () => {
+    return `${Math.floor(timer / 60)
+      .toString()
+      .padStart(2, '0')}:${Math.floor(timer % 60)
+      .toString()
+      .padStart(2, '0')}`;
   };
 
-  componentWillUnmount() {
-    this.timerPaused();
-  }
+  const timerDiv = () => {
+    if (timer < 0) return '00:00';
+    return <span className="timer-time">{timerSet()}</span>;
+  };
 
-  render() {
-    const { todo, deleteTask, ToggleCompleted } = this.props;
-    const { task, id, completed, date } = todo;
-    const { timerMin, timerSec } = this.state;
-
-    let btnClass = cx({
-      '': true,
-      completed: completed,
-      editing: this.state.editing,
-    });
-
-    let timerTime = `${timerMin} : ${timerSec}`;
-    let timer =
-      timerMin > 0 || timerSec > 0 ? (
-        <span className="timer">
-          <button className="icon icon-play" onClick={this.timerPlay}></button>
-          <button className="icon icon-pause" onClick={this.timerPaused}></button>
-          <span className="timer-time">{timerTime}</span>
-        </span>
-      ) : (
-        ''
-      );
-
-    return (
-      <li className={btnClass}>
-        <div className="view">
-          <input className="toggle" type="checkbox" id={id} onClick={ToggleCompleted}></input>
-          <label>
-            <span className="description">
-              {task}
-              {timer}
+  return (
+    <li className={btnClass}>
+      <div className="view">
+        <input className="toggle" type="checkbox" id={todo.id} onClick={ToggleCompleted}></input>
+        <label>
+          <span className="description">
+            {todo.task}
+            <span className="timer">
+              <button className="icon icon-play" onClick={timerPlay}></button>
+              <button className="icon icon-pause" onClick={timerPaused}></button>
+              <span className="timer-time">{timerDiv()}</span>
             </span>
-            <span className="created">{`created ${formatDistanceToNow(date, {
-              addSuffix: true,
-              includeSeconds: true,
-              locale: enUS,
-            })}`}</span>
-          </label>
-          <button
-            className="icon icon-edit"
-            onClick={() =>
-              this.setState(({ editing }) => ({
-                editing: !editing,
-                value: this.props.todo.task,
-              }))
-            }
-          ></button>
-          <button className="icon icon-destroy" onClick={() => deleteTask(id)}></button>
-        </div>
-        {this.state.editing && (
-          <form onSubmit={this.submitTask}>
-            <input className="edit" type="text" value={this.state.value} onChange={this.typeText}></input>
-          </form>
-        )}
-      </li>
-    );
-  }
-}
+          </span>
+          <span className="created">{`created ${formatDistanceToNow(todo.date, {
+            addSuffix: true,
+            includeSeconds: true,
+            locale: enUS,
+          })}`}</span>
+        </label>
+        <button className="icon icon-edit" onClick={editButton}></button>
+        <button className="icon icon-destroy" onClick={() => deleteTask(todo.id)}></button>
+      </div>
+      {editing && (
+        <form onSubmit={submitTask}>
+          <input className="edit" type="text" value={value} onChange={typeText}></input>
+        </form>
+      )}
+    </li>
+  );
+};
+
+export default Task;
 
 Task.defaultProps = {
   todo: {},
+  totalSec: 0,
   editTask: () => {},
   deleteTask: () => {},
   ToggleCompleted: () => {},
@@ -174,6 +122,7 @@ Task.defaultProps = {
 
 Task.propTypes = {
   todo: PropTypes.objectOf(PropTypes.any),
+  totalSec: PropTypes.number,
   editTask: PropTypes.func.isRequired,
   deleteTask: PropTypes.func.isRequired,
   ToggleCompleted: PropTypes.func.isRequired,
