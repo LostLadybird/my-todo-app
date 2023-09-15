@@ -10,6 +10,7 @@ const TaskList = ({ todos, onDeleted, ToggleCompleted, editTask, OnUpdatedTime }
       <Task
         key={item.id}
         todo={item}
+        id={item.id}
         totalSec={item.timer}
         deleteTask={onDeleted}
         editTask={editTask}
@@ -29,7 +30,7 @@ const TaskList = ({ todos, onDeleted, ToggleCompleted, editTask, OnUpdatedTime }
 export default TaskList;
 
 TaskList.defaultProps = {
-  todos: {},
+  todos: [],
   onDeleted: () => {},
   ToggleCompleted: () => {},
   editTask: () => {},

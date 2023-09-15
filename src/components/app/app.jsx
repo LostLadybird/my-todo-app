@@ -14,15 +14,14 @@ const App = () => {
 
   const addItem = (value, min, sec) => {
     let totalSec = parseInt(min || 0) * 60 + parseInt(sec || 0) * 1;
-    let data = {
+    const data = {
       task: value,
       completed: false,
       id: maxId++,
-      date: new Date(),
+      // date: new Date(),
       timer: totalSec,
     };
-    setTodoData([...todoData, data]);
-    return;
+    setTodoData((todoData) => [...todoData, data]);
   };
 
   const updatedTime = (timerId, sec) => {
@@ -38,8 +37,7 @@ const App = () => {
   };
 
   const deleteTask = (deletedId) => {
-    setTodoData(todoData.filter(({ id }) => id !== deletedId));
-    return;
+    setTodoData((todoData) => todoData.filter((el) => el.id !== deletedId));
   };
 
   const toggleProperty = (arr, id, propName) => {
@@ -59,7 +57,6 @@ const App = () => {
     setTodoData(() => {
       return toggleProperty(todoData, id, 'completed');
     });
-    return;
   };
 
   const editTask = (editingId, text) => {
@@ -72,12 +69,10 @@ const App = () => {
       });
       return editedItems;
     });
-    return;
   };
 
   const clearCompleted = () => {
-    setTodoData(todoData.filter((item) => !item.completed));
-    return;
+    setTodoData((todoData) => todoData.filter((item) => !item.completed));
   };
 
   const filterFn = (items, filters) => {
@@ -95,7 +90,6 @@ const App = () => {
 
   const onFilterChange = (value) => {
     setFilters(value);
-    return;
   };
 
   const visibleItems = filterFn(todoData, filters);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+// import { enUS } from 'date-fns/locale';
 import classNames from 'classnames/bind';
 
 import styles from '../task-list/task-list.css';
@@ -10,17 +10,25 @@ import './task.css';
 
 let cx = classNames.bind(styles);
 
-const Task = ({ todo, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdatedTime }) => {
+const Task = ({ todo, id, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdatedTime }) => {
+  const taskDate = new Date();
+
+  // const [formattedCreateTime, setFormattedCreateTime] = useState(null);
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState('');
   const [timerOnState, setTimerOnState] = useState(false);
   const [timer, setTimer] = useState(totalSec);
+  const [formattedCreateTime, setFormattedCreateTime] = useState(`created ${formatDistanceToNow(taskDate)} ago`);
 
   const editButton = () => {
-    console.log('edit');
     setEditing(true);
     setValue(todo.task);
   };
+  const setCreationTime = () => {
+    setFormattedCreateTime(formatDistanceToNow(taskDate)); //{ includeSeconds: true, addSuffix: true, locale: enUS }
+  };
+
+  const removeTodo = () => deleteTask(id);
 
   const submitTask = (event) => {
     event.preventDefault();
@@ -49,7 +57,9 @@ const Task = ({ todo, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdated
   };
 
   useEffect(() => {
+    setCreationTime();
     const interval = setInterval(() => {
+      setCreationTime();
       if (timerOnState) timerOn();
       if (timer === 0) setTimerOnState(false);
     }, 1000);
@@ -79,7 +89,7 @@ const Task = ({ todo, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdated
   };
 
   return (
-    <li className={btnClass}>
+    <li className={btnClass} key={id}>
       <div className="view">
         <input className="toggle" type="checkbox" id={todo.id} onClick={ToggleCompleted}></input>
         <label>
@@ -91,14 +101,10 @@ const Task = ({ todo, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdated
               <span className="timer-time">{timerDiv()}</span>
             </span>
           </span>
-          <span className="created">{`created ${formatDistanceToNow(todo.date, {
-            addSuffix: true,
-            includeSeconds: true,
-            locale: enUS,
-          })}`}</span>
+          <span className="created">{formattedCreateTime}</span>
         </label>
         <button className="icon icon-edit" onClick={editButton}></button>
-        <button className="icon icon-destroy" onClick={() => deleteTask(todo.id)}></button>
+        <button className="icon icon-destroy" onClick={() => removeTodo(id)}></button>
       </div>
       {editing && (
         <form onSubmit={submitTask}>
