@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
-// import { enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import classNames from 'classnames/bind';
 
 import styles from '../task-list/task-list.css';
@@ -13,7 +13,6 @@ let cx = classNames.bind(styles);
 const Task = ({ todo, id, totalSec, deleteTask, ToggleCompleted, editTask, OnUpdatedTime }) => {
   const taskDate = new Date();
 
-  // const [formattedCreateTime, setFormattedCreateTime] = useState(null);
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState('');
   const [timerOnState, setTimerOnState] = useState(false);
@@ -24,8 +23,15 @@ const Task = ({ todo, id, totalSec, deleteTask, ToggleCompleted, editTask, OnUpd
     setEditing(true);
     setValue(todo.task);
   };
+
   const setCreationTime = () => {
-    setFormattedCreateTime(formatDistanceToNow(taskDate)); //{ includeSeconds: true, addSuffix: true, locale: enUS }
+    setFormattedCreateTime(
+      formatDistanceToNow(taskDate, {
+        addSuffix: true,
+        includeSeconds: true,
+        locale: enUS,
+      })
+    );
   };
 
   const removeTodo = () => deleteTask(id);
@@ -64,7 +70,7 @@ const Task = ({ todo, id, totalSec, deleteTask, ToggleCompleted, editTask, OnUpd
       if (timer === 0) setTimerOnState(false);
     }, 1000);
     return () => {
-      OnUpdatedTime(todo.id, timer);
+      OnUpdatedTime(id, timer);
       clearInterval(interval);
     };
   }, [timerOnState, timer]);
@@ -91,7 +97,7 @@ const Task = ({ todo, id, totalSec, deleteTask, ToggleCompleted, editTask, OnUpd
   return (
     <li className={btnClass} key={id}>
       <div className="view">
-        <input className="toggle" type="checkbox" id={todo.id} onClick={ToggleCompleted}></input>
+        <input className="toggle" type="checkbox" id={id} onClick={ToggleCompleted}></input>
         <label>
           <span className="description">
             {todo.task}
@@ -119,6 +125,7 @@ export default Task;
 
 Task.defaultProps = {
   todo: {},
+  id: 1,
   totalSec: 0,
   editTask: () => {},
   deleteTask: () => {},
@@ -128,6 +135,7 @@ Task.defaultProps = {
 
 Task.propTypes = {
   todo: PropTypes.objectOf(PropTypes.any),
+  id: PropTypes.number,
   totalSec: PropTypes.number,
   editTask: PropTypes.func.isRequired,
   deleteTask: PropTypes.func.isRequired,

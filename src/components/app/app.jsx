@@ -18,45 +18,28 @@ const App = () => {
       task: value,
       completed: false,
       id: maxId++,
-      // date: new Date(),
       timer: totalSec,
     };
     setTodoData((todoData) => [...todoData, data]);
   };
 
   const updatedTime = (timerId, sec) => {
-    setTodoData((todoData) => {
-      const taskIndex = todoData.findIndex((el) => el.id === timerId);
-      let updatedData = {
-        ...todoData[taskIndex],
-        timer: sec,
-      };
-      const newTask = [...todoData.slice(0, taskIndex), updatedData, ...todoData.slice(taskIndex + 1)];
-      return newTask;
-    });
+    const index = todoData.findIndex((el) => el.id === timerId);
+    if (index >= 0) {
+      todoData[index].timer = sec;
+    }
   };
 
   const deleteTask = (deletedId) => {
     setTodoData((todoData) => todoData.filter((el) => el.id !== deletedId));
   };
 
-  const toggleProperty = (arr, id, propName) => {
-    const index = arr.findIndex((el) => el.id === id);
-    // 1. update object
-    const oldItem = arr[index];
-    const newItem = { ...oldItem, [propName]: !oldItem[propName] };
-
-    // 2. construct new array
-    const before = arr.slice(0, index);
-    const after = arr.slice(index + 1);
-
-    return [...before, newItem, ...after];
-  };
-
   const ToggleCompleted = (id) => {
-    setTodoData(() => {
-      return toggleProperty(todoData, id, 'completed');
-    });
+    const index = todoData.findIndex((el) => el.id === id);
+    const oldItem = todoData[index];
+    const newItem = { ...oldItem, completed: !oldItem.completed };
+
+    setTodoData((todoData) => [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)]);
   };
 
   const editTask = (editingId, text) => {
