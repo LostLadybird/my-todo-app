@@ -35,11 +35,12 @@ const App = () => {
   };
 
   const ToggleCompleted = (id) => {
-    const index = todoData.findIndex((el) => el.id === id);
-    const oldItem = todoData[index];
-    const newItem = { ...oldItem, completed: !oldItem.completed };
-
-    setTodoData((todoData) => [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)]);
+    setTodoData((todoData) => {
+      const index = todoData.findIndex((el) => el.id === id);
+      const oldItem = todoData[index];
+      const newItem = { ...oldItem, completed: !oldItem.completed };
+      return [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)];
+    });
   };
 
   const editTask = (editingId, text) => {
